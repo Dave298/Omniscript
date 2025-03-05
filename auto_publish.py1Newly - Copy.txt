@@ -1,0 +1,96 @@
+import os
+import subprocess
+import requests
+import json
+import smtplib
+from email.message import EmailMessage
+
+# -----------------------------
+# CONFIGURE THESE VARIABLES
+# -----------------------------
+GITHUB_REPO = "https://github.com/Dave298/OmniScript.git"
+WEBSITE_REPO = "https://github.com/Dave298/OmniScriptSite.git"
+TWITTER_API_KEY = sXtaMaJQtWY0JlfbJq0AVafPR
+TWITTER_API_SECRET = cheLGxDtZTHutjfgpFxTfIe7PpnB4fmPmg7tTMXVl6Yd7kNerc
+PYPI_USERNAME = David.py
+PYPI_PASSWORD = Billiondollar@2
+EMAIL_SENDER = Davidikejiaku28@gmail.com
+EMAIL_PASSWORD = billiondollar@
+EMAIL_RECIPIENTS = [Ifeomaikejiaku@gmail.com]
+
+# -----------------------------
+# PUSH TO GITHUB
+# -----------------------------
+def push_to_github():
+    print("🚀 Pushing code to GitHub...")
+    os.system("git add .")
+    os.system('git commit -m "Auto-publishing OmniScript"')
+    os.system(f"git push -u origin main")
+    print("✅ Code pushed to GitHub!")
+
+# -----------------------------
+# DEPLOY WEBSITE
+# -----------------------------
+def deploy_website():
+    print("🌍 Deploying website...")
+    os.system(f"git clone {WEBSITE_REPO} website")
+    os.chdir("website")
+    os.system("git pull origin main")
+    os.system("git add .")
+    os.system('git commit -m "Updating website for OmniScript launch"')
+    os.system("git push origin main")
+    os.chdir("..")
+    print("✅ Website updated!")
+
+# -----------------------------
+# PUBLISH TO PYPI (Python Package Index)
+# -----------------------------
+def publish_to_pypi():
+    print("📦 Publishing to PyPI...")
+    os.system("python setup.py sdist bdist_wheel")
+    os.system(f"twine upload -u {PYPI_USERNAME} -p {PYPI_PASSWORD} dist/*")
+    print("✅ OmniScript published to PyPI!")
+
+# -----------------------------
+# ANNOUNCE ON TWITTER
+# -----------------------------
+def post_to_twitter():
+    print("🐦 Posting to Twitter...")
+    tweet = "🚀 OmniScript is officially LIVE! A next-gen scripting language built for speed & versatility. Check it out: https://github.com/Dave298/OmniScript"
+    twitter_url = "https://api.twitter.com/2/tweets"
+    headers = {"Authorization": f"Bearer {TWITTER_API_KEY}"}
+    payload = {"text": tweet}
+    response = requests.post(twitter_url, headers=headers, json=payload)
+    if response.status_code == 201:
+        print("✅ Twitter post successful!")
+    else:
+        print("❌ Twitter post failed:", response.json())
+
+# -----------------------------
+# SEND EMAIL ANNOUNCEMENT
+# -----------------------------
+def send_email():
+    print("📧 Sending email announcement...")
+    msg = EmailMessage()
+    msg["Subject"] = "🚀 OmniScript is LIVE!"
+    msg["From"] = EMAIL_SENDER
+    msg["To"] = ", ".join(EMAIL_RECIPIENTS)
+    msg.set_content("OmniScript has officially launched! Check it out here: https://github.com/Dave298/OmniScript")
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(EMAIL_SENDER, EMAIL_PASSWORD)
+        server.send_message(msg)
+    
+    print("✅ Email sent successfully!")
+
+# -----------------------------
+# MAIN FUNCTION - EXECUTE ALL
+# -----------------------------
+if __name__ == "__main__":
+    push_to_github()
+    deploy_website()
+    publish_to_pypi()
+    post_to_twitter()
+    send_email()
+
+    print("\n🚀🔥 ALL DONE! OmniScript is now PUBLIC!")
